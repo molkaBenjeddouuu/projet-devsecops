@@ -28,7 +28,20 @@ pipeline {
             }
         }
 
-        // Étape 3: Installation des dépendances
+        // Étape 3: Vérification du fichier package.json
+        stage('Vérification du fichier package.json') {
+            steps {
+                script {
+                    sh '''
+                        echo "Vérification de l'existence du fichier package.json"
+                        ls -al
+                        cat package.json || echo "Le fichier package.json n'existe pas."
+                    '''
+                }
+            }
+        }
+
+        // Étape 4: Installation des dépendances
         stage('Install Dependencies') {
             steps {
                 script {
@@ -43,7 +56,7 @@ pipeline {
             }
         }
 
-        // Étape 4: Analyse de sécurité avec Snyk
+        // Étape 5: Analyse de sécurité avec Snyk
         stage('Snyk Security Scan') {
             steps {
                 script {
@@ -52,7 +65,7 @@ pipeline {
             }
         }
 
-        // Étape 5: Scan de sécurité avec OWASP ZAP
+        // Étape 6: Scan de sécurité avec OWASP ZAP
         stage('OWASP ZAP Scan') {
             steps {
                 script {
@@ -61,7 +74,7 @@ pipeline {
             }
         }
 
-        // Étape 6: Push les modifications vers GitHub (si nécessaire)
+        // Étape 7: Push les modifications vers GitHub (si nécessaire)
         stage('Push to GitHub') {
             steps {
                 script {
