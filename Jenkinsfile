@@ -16,7 +16,7 @@ pipeline {
                         if ! command -v python3 &> /dev/null
                         then
                             echo "Python n'est pas installé, installation..."
-                            sudo apt-get update && sudo apt-get install python3 python3-pip -y
+                            apt-get update && apt-get install python3 python3-pip -y
                         else
                             echo "Python déjà installé"
                         fi
