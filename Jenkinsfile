@@ -9,6 +9,8 @@ pipeline {
     environment {
         GIT_REPO_URL = 'https://github.com/molkaBenjeddouuu/projet-devsecops.git'
         NODE_VERSION = '18'
+        SONARQUBE_URL = 'http://sonarqube:9000'  // URL de ton instance SonarQube
+        SONARQUBE_TOKEN = credentials('sonarqube-token')  // Token d'accès SonarQube (configuré dans Jenkins)
     }
 
     stages {
@@ -26,7 +28,7 @@ pipeline {
                         echo "Affichage du PATH"
                         echo $PATH
                         echo "Vérification des commandes"
-                        which zap-cli || echo "zap-cli non trouvé"
+                        which pre-commit || echo "pre-commit non trouvé"
                         which npm || echo "npm non trouvé"
                         which node || echo "node non trouvé"
                     '''
@@ -34,7 +36,66 @@ pipeline {
             }
         }
 
-        // Ajoute les autres étapes ici...
+        stage('Exécution de Pre-commit') {
+            steps {
+                script {
+                    echo "Exécution des hooks pre-commit"
+                    sh '''
+                        pre-commit run --all-files
+                    '''
+                }
+            }
+        }
+
+        stage('Analyse SonarQube') {
+            steps {
+                script {
+                    echo "Analyse du code avec SonarQube"
+                    sh '''
+                        sonar-scanner \
+                            -Dsonar.projectKey=projet-devsecops \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=${SONARQUBE_URL} \
+                            -Dsonar.login=${SONARQUBE_TOKEN}
+                    '''
+                }
+            }
+        }
+
+        stage('Tests unitaires avec JUnit') {
+            steps {
+                script {
+                    echo "Exécution des tests unitaires avec JUnit"
+                    sh '''
+                        npm install
+                        npm test -- --reporter junit --output ./test-results
+                    '''
+                }
+            }
+        }
+
+        stage('Création de l'image Docker') {
+            steps {
+                script {
+                    echo "Création de l'image Docker"
+                    sh '''
+                        docker build -t projet-devsecops .
+                    '''
+                }
+            }
+        }
+
+        stage('Déploiement de Grafana et Prometheus') {
+            steps {
+                script {
+                    echo "Déploiement de Grafana et Prometheus pour la surveillance"
+                    sh '''
+                        docker-compose -f docker-compose-monitoring.yml up -d
+                    '''
+                }
+            }
+        }
+
     }
 
     post {
@@ -51,3 +112,5 @@ pipeline {
         }
     }
 }
+
+              
