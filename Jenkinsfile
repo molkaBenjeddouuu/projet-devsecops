@@ -4,18 +4,12 @@ pipeline {
         GIT_REPO_URL = 'https://github.com/molkaBenjeddouuu/projet-devsecops.git'
     }
     stages {
-        stage('Vérification des outils') {
+        stage('Exécution de Pre-commit') {
             steps {
                 script {
-                    echo "Vérification de l'environnement"
+                    echo "Exécution des hooks pre-commit"
                     sh '''
-                        echo "Affichage du PATH"
-                        echo $PATH
-                        echo "Vérification des commandes"
-                        which git || { echo "Git non trouvé"; exit 1; }
-                        which pre-commit || echo "pre-commit non trouvé"
-                        which npm || echo "npm non trouvé"
-                        which node || echo "node non trouvé"
+                        pre-commit run --all-files
                     '''
                 }
             }
