@@ -7,7 +7,7 @@ pipeline {
                 checkout scm
             }
         }
-        
+
         stage('Installation de Python et pip') {
             steps {
                 script {
@@ -16,7 +16,8 @@ pipeline {
                         if ! command -v python3 &> /dev/null
                         then
                             echo "Python n'est pas installé, installation..."
-                            apt-get update && apt-get install python3 python3-pip -y
+                            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+                            python3 get-pip.py
                         else
                             echo "Python déjà installé"
                         fi
