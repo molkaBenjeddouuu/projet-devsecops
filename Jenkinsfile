@@ -25,13 +25,13 @@ pipeline {
                             echo "nvm non trouvé, installation..."
                             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
                             export NVM_DIR="$HOME/.nvm"
-                            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                         fi
                     '''
                     // Installer la version de Node.js via nvm
                     sh '''
                         export NVM_DIR="$HOME/.nvm"
-                        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                         nvm install ${NODE_VERSION}
                         nvm use ${NODE_VERSION}
                     '''
@@ -45,4 +45,47 @@ pipeline {
         stage('Snyk Security Scan') {
             steps {
                 script {
-                    // Exécuter Snyk pour scanne
+                    // Exécuter Snyk pour scanner les vulnérabilités dans les dépendances
+                    sh 'snyk test'
+                }
+            }
+        }
+
+        // Étape 4: Scan de sécurité avec OWASP ZAP
+        stage('OWASP ZAP Scan') {
+            steps {
+                script {
+                    // Exemple de scan rapide avec ZAP
+                    sh 'zap-cli quick-scan --self-contained --start-url http://ton-app-url'
+                }
+            }
+        }
+
+        // Étape 5: Push les modifications vers GitHub (si nécessaire)
+        stage('Push to GitHub') {
+            steps {
+                script {
+                    // Si des modifications doivent être poussées vers GitHub
+                    sh 'git push origin main'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Actions à faire après chaque exécution de pipeline
+            echo 'Pipeline terminée.'
+        }
+
+        success {
+            // Actions si la pipeline réussit
+            echo 'Pipeline réussie !'
+        }
+
+        failure {
+            // Actions si la pipeline échoue
+            echo 'Pipeline échouée.'
+        }
+    }
+}
