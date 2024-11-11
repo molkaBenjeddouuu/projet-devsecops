@@ -7,14 +7,14 @@ pipeline {
         stage('Installation de Python et pip') {
             steps {
                 script {
-                    echo "Installation de Python et pip"
+                    echo "Installation de Python et pip sans sudo"
                     sh '''
                         # Vérifier si Python est installé
                         if ! command -v python3 &> /dev/null
                         then
                             echo "Python n'est pas installé, installation..."
-                            sudo apt update
-                            sudo apt install python3 python3-pip -y
+                            # Installer Python dans le répertoire utilisateur sans sudo
+                            curl -sSL https://install.python-poetry.org | python3 -
                         else
                             echo "Python déjà installé"
                         fi
@@ -31,7 +31,7 @@ pipeline {
                         if ! command -v pre-commit &> /dev/null
                         then
                             echo "pre-commit n'est pas installé, installation..."
-                            pip3 install pre-commit
+                            python3 -m pip install --user pre-commit
                         else
                             echo "pre-commit déjà installé"
                         fi
