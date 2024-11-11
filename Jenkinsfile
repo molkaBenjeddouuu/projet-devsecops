@@ -1,5 +1,5 @@
 pipeline {
-    agent none  // Utilise agent none pour éviter de définir un agent global, et définis des agents spécifiques dans les étapes.
+    agent none  // Utilise agent none pour éviter de définir un agent global, et défini des agents spécifiques dans les étapes.
 
     environment {
         GIT_REPO_URL = 'https://github.com/molkaBenjeddouuu/projet-devsecops.git'
@@ -25,10 +25,21 @@ pipeline {
                         echo "Affichage du PATH"
                         echo $PATH
                         echo "Vérification des commandes"
-                        which pre-commit || echo "pre-commit non trouvé"
+                        which pre-commit || { echo "pre-commit non trouvé"; exit 1; }
                         which npm || echo "npm non trouvé"
                         which node || echo "node non trouvé"
                     '''
+                }
+            }
+        }
+
+        stage('Installation de Pre-commit') {
+            steps {
+                script {
+                    // Installer pre-commit
+                    sh 'pip install pre-commit'  // Si tu utilises Python et pip
+                    // ou
+                    sh 'npm install -g pre-commit'  // Si tu utilises npm (si applicable)
                 }
             }
         }
@@ -67,7 +78,7 @@ pipeline {
                 script {
                     echo "Exécution des tests unitaires avec JUnit"
                     sh '''
-                        npm install
+                        npm install  // Installe les dépendances si elles ne sont pas déjà installées
                         npm test -- --reporter junit --output ./test-results
                     '''
                 }
@@ -119,3 +130,4 @@ pipeline {
         }
     }
 }
+
