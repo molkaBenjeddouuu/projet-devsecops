@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18-bullseye'
-            args '-u root:root'
-        }
-    }
+    agent none  // Utilise agent none pour éviter de définir un agent global, et définis des agents spécifiques dans les étapes.
 
     environment {
         GIT_REPO_URL = 'https://github.com/molkaBenjeddouuu/projet-devsecops.git'
@@ -15,12 +10,14 @@ pipeline {
 
     stages {
         stage('Checkout') {
+            agent any  // Utilise n'importe quel agent pour cette étape
             steps {
                 git url: "${env.GIT_REPO_URL}", branch: 'main'
             }
         }
 
         stage('Vérification des outils') {
+            agent any
             steps {
                 script {
                     echo "Vérification de l'environnement"
@@ -37,6 +34,7 @@ pipeline {
         }
 
         stage('Exécution de Pre-commit') {
+            agent any
             steps {
                 script {
                     echo "Exécution des hooks pre-commit"
@@ -48,6 +46,7 @@ pipeline {
         }
 
         stage('Analyse SonarQube') {
+            agent any
             steps {
                 script {
                     echo "Analyse du code avec SonarQube"
@@ -63,6 +62,7 @@ pipeline {
         }
 
         stage('Tests unitaires avec JUnit') {
+            agent any
             steps {
                 script {
                     echo "Exécution des tests unitaires avec JUnit"
@@ -74,7 +74,13 @@ pipeline {
             }
         }
 
-        stage('Création de l'image Docker') {
+        stage('Création de l\'image Docker') {
+            agent {
+                docker {
+                    image 'node:18-bullseye'
+                    args '-u root:root'
+                }
+            }
             steps {
                 script {
                     echo "Création de l'image Docker"
@@ -86,6 +92,7 @@ pipeline {
         }
 
         stage('Déploiement de Grafana et Prometheus') {
+            agent any
             steps {
                 script {
                     echo "Déploiement de Grafana et Prometheus pour la surveillance"
@@ -112,5 +119,3 @@ pipeline {
         }
     }
 }
-
-              
