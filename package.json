@@ -1,7 +1,7 @@
 {
   "name": "projet-devsecops",
   "version": "1.0.0",
-  "description": "<<<<<<< HEAD\r # Projet DevSecOps\r =======\r # projet-devsecops\r >>>>>>> 1276e8da871120974a0676df3e6932c371c81a69",
+  "description": "Projet DevSecOps",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,3 +10,4 @@
   "author": "",
   "license": "ISC"
 }
+
