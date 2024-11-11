@@ -51,6 +51,8 @@ pipeline {
                         npm -v
                         echo "Installation des dépendances"
                         npm install
+                        echo "Installation de Snyk"
+                        npm install -g snyk  # Ajoutez cette ligne pour installer Snyk globalement
                     '''
                 }
             }
