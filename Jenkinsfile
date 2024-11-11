@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         GIT_REPO_URL = 'https://github.com/molkaBenjeddouuu/projet-devsecops.git'
-        NODE_VERSION = '18'  // Définir la version de Node.js à utiliser
+        NODE_VERSION = '18'
     }
 
     stages {
@@ -19,11 +19,19 @@ pipeline {
             }
         }
 
-        // Étape 2: Installation des dépendances
+        // Étape 2: Vérification du dépôt
+        stage('Vérification du dépôt') {
+            steps {
+                script {
+                    sh 'ls -al'
+                }
+            }
+        }
+
+        // Étape 3: Installation des dépendances
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Installer les dépendances npm
                     sh '''
                         echo "Vérification de Node.js et npm"
                         node -v
@@ -35,7 +43,7 @@ pipeline {
             }
         }
 
-        // Étape 3: Analyse de sécurité avec Snyk
+        // Étape 4: Analyse de sécurité avec Snyk
         stage('Snyk Security Scan') {
             steps {
                 script {
@@ -44,7 +52,7 @@ pipeline {
             }
         }
 
-        // Étape 4: Scan de sécurité avec OWASP ZAP
+        // Étape 5: Scan de sécurité avec OWASP ZAP
         stage('OWASP ZAP Scan') {
             steps {
                 script {
@@ -53,7 +61,7 @@ pipeline {
             }
         }
 
-        // Étape 5: Push les modifications vers GitHub (si nécessaire)
+        // Étape 6: Push les modifications vers GitHub (si nécessaire)
         stage('Push to GitHub') {
             steps {
                 script {
