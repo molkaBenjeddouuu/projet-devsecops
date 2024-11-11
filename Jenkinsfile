@@ -27,14 +27,8 @@ pipeline {
                 script {
                     echo "Installation de Pre-commit"
                     sh '''
-                        # Installer pre-commit si nécessaire
-                        if ! command -v pre-commit &> /dev/null
-                        then
-                            echo "pre-commit n'est pas installé, installation..."
-                            python3 -m pip install --user pre-commit
-                        else
-                            echo "pre-commit déjà installé"
-                        fi
+                        # Installer pre-commit via pip si Poetry échoue
+                        python3 -m pip install --user pre-commit
                     '''
                 }
             }
