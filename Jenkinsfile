@@ -16,7 +16,7 @@ pipeline {
                         if ! command -v python3 &> /dev/null
                         then
                             echo "Python n'est pas installé, installation..."
-                            curl -sSL https://install.python-poetry.org | python3 -
+                            sudo apt-get update && sudo apt-get install python3 python3-pip -y
                         else
                             echo "Python déjà installé"
                         fi
@@ -53,7 +53,6 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Processus de build'
-                // Ajoutez ici les étapes pour le build ou autres tâches.
             }
         }
 
