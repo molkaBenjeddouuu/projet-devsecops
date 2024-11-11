@@ -5,7 +5,7 @@ pipeline {
         GIT_REPO_URL = 'https://github.com/molkaBenjeddouuu/projet-devsecops.git'
         NODE_VERSION = '18'
         SONARQUBE_URL = 'http://sonarqube:9000'  // URL de ton instance SonarQube
-        SONARQUBE_TOKEN = credentials('sonarqube-token')  // Token d'accès SonarQube (configuré dans Jenkins)
+        SONARQUBE_TOKEN = credentials('SonarToken')  // Token d'accès SonarQube (configuré dans Jenkins)
     }
 
     stages {
