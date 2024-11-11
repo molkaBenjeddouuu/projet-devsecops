@@ -1,9 +1,14 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18'
+            args '-u root:root'
+        }
+    }
 
     environment {
-        GIT_REPO_URL = 'https://github.com/molkaBenjeddouuu/projet-devsecops.git'  // URL du dépôt Git
-        NODE_VERSION = '16'  // Définir la version de Node.js à utiliser
+        GIT_REPO_URL = 'https://github.com/molkaBenjeddouuu/projet-devsecops.git'
+        NODE_VERSION = '18'  // Définir la version de Node.js à utiliser
     }
 
     stages {
@@ -18,25 +23,14 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Installer nvm (Node Version Manager) si ce n'est pas déjà fait
-                    sh '''
-                        if ! command -v nvm &> /dev/null
-                        then
-                            echo "nvm non trouvé, installation..."
-                            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-                            export NVM_DIR="$HOME/.nvm"
-                            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                        fi
-                    '''
-                    // Installer la version de Node.js via nvm
-                    sh '''
-                        export NVM_DIR="$HOME/.nvm"
-                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                        nvm install ${NODE_VERSION}
-                        nvm use ${NODE_VERSION}
-                    '''
                     // Installer les dépendances npm
-                    sh 'npm install'
+                    sh '''
+                        echo "Vérification de Node.js et npm"
+                        node -v
+                        npm -v
+                        echo "Installation des dépendances"
+                        npm install
+                    '''
                 }
             }
         }
@@ -45,7 +39,6 @@ pipeline {
         stage('Snyk Security Scan') {
             steps {
                 script {
-                    // Exécuter Snyk pour scanner les vulnérabilités dans les dépendances
                     sh 'snyk test'
                 }
             }
@@ -55,7 +48,6 @@ pipeline {
         stage('OWASP ZAP Scan') {
             steps {
                 script {
-                    // Exemple de scan rapide avec ZAP
                     sh 'zap-cli quick-scan --self-contained --start-url http://ton-app-url'
                 }
             }
@@ -65,8 +57,13 @@ pipeline {
         stage('Push to GitHub') {
             steps {
                 script {
-                    // Si des modifications doivent être poussées vers GitHub
-                    sh 'git push origin main'
+                    sh '''
+                        git config --global user.email "ton-email@example.com"
+                        git config --global user.name "TonNom"
+                        git add .
+                        git commit -m "Mise à jour depuis Jenkins Pipeline"
+                        git push origin main
+                    '''
                 }
             }
         }
@@ -74,17 +71,14 @@ pipeline {
 
     post {
         always {
-            // Actions à faire après chaque exécution de pipeline
             echo 'Pipeline terminée.'
         }
 
         success {
-            // Actions si la pipeline réussit
             echo 'Pipeline réussie !'
         }
 
         failure {
-            // Actions si la pipeline échoue
             echo 'Pipeline échouée.'
         }
     }
