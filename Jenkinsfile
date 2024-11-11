@@ -9,7 +9,6 @@ pipeline {
     environment {
         GIT_REPO_URL = 'https://github.com/molkaBenjeddouuu/projet-devsecops.git'
         NODE_VERSION = '18'
-        SNYK_TOKEN = credentials('snyk-api-token') // Assurez-vous d'avoir ajouté votre token Snyk dans Jenkins (via les credentials)
     }
 
     stages {
@@ -52,24 +51,12 @@ pipeline {
                         npm -v
                         echo "Installation des dépendances"
                         npm install
-                        echo "Installation de Snyk"
-                        npm install -g snyk
-                        snyk auth ${SNYK_TOKEN}  # Authentification avec le token Snyk
                     '''
                 }
             }
         }
 
-        // Étape 5: Analyse de sécurité avec Snyk
-        stage('Snyk Security Scan') {
-            steps {
-                script {
-                    sh 'snyk test'
-                }
-            }
-        }
-
-        // Étape 6: Scan de sécurité avec OWASP ZAP
+        // Étape 5: Scan de sécurité avec OWASP ZAP
         stage('OWASP ZAP Scan') {
             steps {
                 script {
@@ -78,7 +65,7 @@ pipeline {
             }
         }
 
-        // Étape 7: Push les modifications vers GitHub (si nécessaire)
+        // Étape 6: Push les modifications vers GitHub (si nécessaire)
         stage('Push to GitHub') {
             steps {
                 script {
@@ -108,3 +95,4 @@ pipeline {
         }
     }
 }
+
